@@ -1,0 +1,64 @@
+.xs-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    .xs-container-left {
+        width: 220px;
+        .el-collapse-item {
+            .el-collapse-item__arrow {
+                position: absolute;
+                left: 6px;
+            }
+        }
+    }
+    .xs-container-middle {
+        width: calc(100% - 220px - 220px);
+    }
+    .xs-container-right {
+        width: 220px;
+        .el-tabs__nav-wrap {
+            padding: 0 8px;
+        }
+        .el-input-number.is-controls-right {
+            .el-input__inner {
+                padding: 0;
+            }
+        }
+        .el-form-item__label {
+            font-size: 12px;
+        }
+    }
+    .dataset-add {
+        line-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+    }
+    .dataset-add-action {
+        cursor: pointer;
+    }
+    .flex-layout {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+    }
+    .icon-wrap {
+        padding: 4px;
+        display: flex;
+        cursor: pointer;
+        &:hover {
+            background-color: #e3e3e3;
+            border-radius: 4px;
+        }
+        &:focus-visible {
+            outline: none;
+        }
+    }
+    .full-width {
+        width: 100%;
+    }
+}

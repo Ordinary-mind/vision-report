@@ -1,0 +1,14 @@
+{
+  "name": "qreportview",
+  "version": "0.0.1",
+  "description": "智能报表",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "报表", "vue3 报表"
+  ],
+  "author": "LQN",
+  "license": "MIT"
+}

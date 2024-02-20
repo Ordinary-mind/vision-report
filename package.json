@@ -1,0 +1,31 @@
+{
+  "name": "vision-report",
+  "private": false,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:lib": "vite build  --config vite.lib.config.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.3.12",
+    "file-saver": "^2.0.5",
+    "localforage": "^1.10.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4",
+    "vue3-colorpicker": "^2.2.2",
+    "x-data-spreadsheet": "^1.1.9"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "less": "^4.2.0",
+    "sass": "^1.66.1",
+    "sass-loader": "^13.3.2",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.2",
+    "vite": "^4.4.5"
+  }
+}
