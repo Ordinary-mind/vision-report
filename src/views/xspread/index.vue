@@ -299,7 +299,7 @@ const handlePreview = () => {
       cloneData.merges = cloneData.merges.concat(constructMerges);
       const key = 'previewData';
       localforage.setItem(key, JSON.stringify(cloneData));
-      window.open('/preview');
+      window.open('/vision-report/preview');
     }
   } else {
     ElMessage.error('未找到数据源');
@@ -353,151 +353,180 @@ onMounted(() => {
   Spreadsheet.locale('zh-cn', zhCN);
   xsInstance = new Spreadsheet('#xSpreadSheet', options)
     .loadData({
-      name: 'sheet2',
-      freeze: 'A1',
-      styles: [
+      "name": "sheet2",
+      "freeze": "A1",
+      "styles": [
         {
-          border: {
-            bottom: ['thin', '#000'],
-            top: ['thin', '#000'],
-            left: ['thin', '#000'],
-            right: ['thin', '#000'],
+          "border": {
+            "bottom": [
+              "thin",
+              "#000"
+            ],
+            "top": [
+              "thin",
+              "#000"
+            ],
+            "left": [
+              "thin",
+              "#000"
+            ],
+            "right": [
+              "thin",
+              "#000"
+            ]
+          }
+        },
+        {
+          "border": {
+            "bottom": [
+              "thin",
+              "#000"
+            ],
+            "top": [
+              "thin",
+              "#000"
+            ],
+            "left": [
+              "thin",
+              "#000"
+            ],
+            "right": [
+              "thin",
+              "#000"
+            ]
           },
+          "bgcolor": "#d8d8d8"
         },
         {
-          border: {
-            bottom: ['thin', '#000'],
-            top: ['thin', '#000'],
-            left: ['thin', '#000'],
-            right: ['thin', '#000'],
-          },
-          bgcolor: '#d8d8d8',
+          "format": "percent"
         },
         {
-          format: 'percent',
+          "format": "datetime"
         },
         {
-          format: 'datetime',
+          "format": "date"
         },
         {
-          format: 'date',
+          "format": "text"
         },
         {
-          format: 'text',
+          "format": "normal"
         },
         {
-          format: 'normal',
+          "align": "center"
         },
         {
-          align: 'center',
+          "align": "center",
+          "font": {
+            "size": 12
+          }
         },
         {
-          align: 'center',
-          font: {
-            size: 12,
-          },
-        },
-        {
-          align: 'center',
-          font: {
-            size: 14,
-          },
-        },
+          "align": "center",
+          "font": {
+            "size": 14
+          }
+        }
       ],
-      merges: ['A1:C1'],
-      rows: {
-        0: {
-          cells: {
-            0: {
-              merge: [0, 2],
-              text: '统计报表',
-              style: 9,
+      "merges": [
+        "A1:C1"
+      ],
+      "rows": {
+        "0": {
+          "cells": {
+            "0": {
+              "merge": [
+                0,
+                2
+              ],
+              "text": "统计报表",
+              "style": 9
             },
-            1: {
-              style: 9,
+            "1": {
+              "style": 9
             },
-            2: {
-              style: 9,
-            },
+            "2": {
+              "style": 9
+            }
           },
-          height: 41,
+          "height": 41
         },
-        1: {
-          cells: {
-            0: {
-              text: '日期',
-              style: 1,
+        "1": {
+          "cells": {
+            "0": {
+              "text": "日期",
+              "style": 1
             },
-            1: {
-              text: '姓名',
-              style: 1,
+            "1": {
+              "text": "姓名",
+              "style": 1
             },
-            2: {
-              text: '地址',
-              style: 1,
+            "2": {
+              "text": "地址",
+              "style": 1
+            }
+          }
+        },
+        "2": {
+          "cells": {
+            "0": {
+              "style": 0,
+              "text": "#{dataset1.date}"
             },
-          },
-        },
-        2: {
-          cells: {
-            0: {
-              style: 0,
-              text: '#{userApi.date}',
+            "1": {
+              "style": 0,
+              "text": "#{dataset1.name}"
             },
-            1: {
-              style: 0,
-              text: '#{userApi.group(name)}',
-            },
-            2: {
-              style: 0,
-              text: '#{userApi.address}',
-            },
-          },
+            "2": {
+              "style": 0,
+              "text": "#{dataset1.address}"
+            }
+          }
         },
-        3: {
-          cells: {
-            0: {
-              style: 6,
-            },
-          },
+        "3": {
+          "cells": {
+            "0": {
+              "style": 6
+            }
+          }
         },
-        4: {
-          cells: {
-            0: {},
-          },
+        "4": {
+          "cells": {
+            "0": {}
+          }
         },
-        5: {
-          cells: {
-            0: {},
-            3: {},
-          },
+        "5": {
+          "cells": {
+            "0": {},
+            "3": {}
+          }
         },
-        6: {
-          cells: {
-            0: {},
-          },
+        "6": {
+          "cells": {
+            "0": {}
+          }
         },
-        7: {
-          cells: {
-            0: {},
-          },
+        "7": {
+          "cells": {
+            "0": {}
+          }
         },
-        len: 101,
+        "len": 101
       },
-      cols: {
-        0: {
-          width: 120,
+      "cols": {
+        "0": {
+          "width": 120
         },
-        1: {
-          width: 149,
+        "1": {
+          "width": 149
         },
-        2: {
-          width: 152,
+        "2": {
+          "width": 152
         },
-        len: 26,
+        "len": 26
       },
-      validations: [],
-      autofilter: {},
+      "validations": [],
+      "autofilter": {}
     }) // load data
     .change((data) => {
       // console.log(JSON.stringify(data))
