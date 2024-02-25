@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
     {
+        path: '/',
+        redirect: '/vision-report'
+    },
+    {
         path: '/vision-report',
         redirect: '/vision-report/xs'
     },
