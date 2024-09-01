@@ -2,19 +2,19 @@
     width: 100%;
     height: 100%;
     display: flex;
-    flex-wrap: wrap;
     position: relative;
     .xs-container-left {
-        width: 220px;
-        .el-collapse-item {
-            .el-collapse-item__arrow {
-                position: absolute;
-                left: 6px;
-            }
+        width: 220px;;
+        .container-sidebar {
+
+            display: flex;
+            flex-direction: column;
+            padding: 0 16px;
         }
     }
     .xs-container-middle {
-        width: calc(100% - 220px - 220px);
+        flex: 1;
+        overflow: hidden;
     }
     .xs-container-right {
         width: 220px;
@@ -29,16 +29,6 @@
         .el-form-item__label {
             font-size: 12px;
         }
-    }
-    .dataset-add {
-        line-height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-    }
-    .dataset-add-action {
-        cursor: pointer;
     }
     .flex-layout {
         display: flex;
@@ -60,5 +50,15 @@
     }
     .full-width {
         width: 100%;
+    }
+    .form-item {
+        display: flex;
+        flex-direction: column;
+        +.form-item {
+            margin-top: 10px;
+        }
+        >span{
+            line-height: 32px;
+        }
     }
 }

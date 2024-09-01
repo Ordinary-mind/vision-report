@@ -1,55 +1,32 @@
 <template>
   <div class="xs-container">
     <div class="xs-container-left">
-      <div class="container-sidebar">
-        <div class="dataset-add">
-          <span>数据集管理</span>
-          <el-dropdown @command="handleCommand">
-            <div class="icon-wrap">
-              <el-icon :size="16">
-                <Plus />
-              </el-icon>
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="json">JSON数据集</el-dropdown-item>
-                <el-dropdown-item command="api">API数据集</el-dropdown-item>
-                <el-dropdown-item command="sql">SQL数据集</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+      <div class="com-header">
+        <div class="back-wrap" @click="handleBack">
+          <el-icon>
+            <Back />
+          </el-icon>
+          <span>返回</span>
         </div>
-        <el-collapse v-model="activeNames" @change="handleChange">
-          <el-collapse-item v-for="(item, index) in datasetList" :key="item.key" :name="item.key">
-            <template #title>
-              <div class="flex-layout full-width" style="margin: 0px 16px 0px 24px">
-                <el-tooltip effect="dark" :content="item.name" placement="top" :enterable="false">
-                  <span style="line-height: 20px">{{ item.key }}</span>
-                </el-tooltip>
-                <div class="flex-layout">
-                  <div class="icon-wrap" title="编辑" @click.stop="handleEditDataset(item, index)">
-                    <el-icon :size="16">
-                      <Edit />
-                    </el-icon>
-                  </div>
-                  <div class="icon-wrap" title="删除" @click.stop="handleDeleteDataset(item, index)">
-                    <el-icon :size="16">
-                      <Close />
-                    </el-icon>
-                  </div>
-                </div>
-              </div>
-            </template>
-            <ul class="qreport-list">
-              <li class="list-item" v-for="(it, i) in item.keyList" :key="`key_${index}_${i}`" draggable="true"
-                @dragstart="handleDragStart($event, item, it)">
-                <el-tooltip effect="dark" :content="it.name" placement="bottom" :enterable="false">
-                  <span>{{ it.key }}</span>
-                </el-tooltip>
-              </li>
-            </ul>
-          </el-collapse-item>
-        </el-collapse>
+      </div>
+      <div class="container-sidebar">
+        <div class="form-item">
+          <span>报表名称</span>
+          <el-input v-model="reportData.name"></el-input>
+        </div>
+        <div class="form-item">
+          <span>数据集</span>
+          <el-select v-model="reportData.datasetId" placeholder="请选择" filterable @change="handleDatasetChange">
+            <el-option v-for="item in datasetList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </div>
+        <div class="form-item">
+          <span>数据集字段</span>
+          <div class="qreport-list">
+            <div class="list-item" v-for="item in state.datasetFields" draggable="true"
+              @dragstart="handleDragStart($event, item)">{{ item.field }}</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="xs-container-middle" @drop="handleDrop" @dragover="handleDragOver">
@@ -81,78 +58,34 @@
                 <el-option v-for="item in groupOptions" :key="item.value" v-bind="item" />
               </el-select>
             </el-form-item>
+            <el-form-item label="动态宽度">
+              <el-checkbox v-model="activeCell.dynamicWidth" @change="handleDynamicWidthChange" />
+            </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>
     </div>
-    <datasetComponent v-if="datasetVisible" :data="datasetList[datasetIndex]" @close="handleCloseDataset"
-      @confirm="handleConfirm"></datasetComponent>
   </div>
 </template>
+
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import Spreadsheet from 'x-data-spreadsheet';
 import { ElMessage } from 'element-plus';
 import CellRange from 'x-data-spreadsheet/src/core/cell_range';
-import zhCN from 'x-data-spreadsheet/src/locale/zh-cn';
-import datasetComponent from '../dataset/index.vue';
 import localforage from 'localforage';
-const activeNames = ref(['dataset1']);
-const datasetVisible = ref(false);
+import config from '@/config'
+import { useRoute, useRouter } from 'vue-router';
 const activeTab = ref('basic');
-const datasetIndex = ref(0);
-const handleCommand = (command) => {
-  if (command !== 'json') {
-    return ElMessage.error('目前暂时只支持JSON数据集，敬请期待其他数据集！');
-  }
-  handleCreateDataset('json');
-};
-const datasetList = ref([
-  {
-    key: 'dataset1',
-    name: '数据集1',
-    keyList: [
-      { key: 'date', name: '日期' },
-      { key: 'name', name: '名称' },
-      { key: 'address', name: '地址' },
-    ],
-    data: JSON.stringify([
-      {
-        date: '2016-05-03',
-        name: 'Jim',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2016-05-02',
-        name: 'Jim',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2016-05-04',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2016-05-01',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-    ]),
-  },
-  {
-    key: 'dataset2',
-    name: '数据集2',
-    keyList: [{ key: 'name', name: '姓名' }, { key: 'num', name: '学号' }, { key: 'subject', name: '学科' }, { key: 'score', name: '分数' }],
-    data: JSON.stringify([
-      { name: '张三', num: '001', subject: '语文', score: 87 },
-      { name: '张三', num: '001', subject: '数学', score: 69 },
-      { name: '李四', num: '002', subject: '数学', score: 77 },
-      { name: '王五', num: '003', subject: '英语', score: 92 },
-    ]),
-  },
-]);
+const route = useRoute()
+const router = useRouter()
+const findObj = config.reportList.find(a => a.id === route.params.id)
+const reportData = ref(findObj)
+const datasetList = ref(config.datasetList);
+const state = reactive({
+  datasetFields: []
+})
 const groupOptions = ref([
-  { value: '', label: '不分组' },
+  { value: 'no', label: '不分组' },
   { value: 'group', label: '向下分组' },
   { value: 'groupRight', label: '向右分组' },
 ])
@@ -162,33 +95,10 @@ const activeCell = ref({
   ci: 0,
   width: null,
   height: null,
-  groupType: ''
+  groupType: 'no',
+  dynamicWidth: false
 });
-const handleEditDataset = (item, index) => {
-  datasetIndex.value = index;
-  datasetVisible.value = true;
-};
-const handleCreateDataset = () => {
-  datasetIndex.value = -1;
-  datasetVisible.value = true;
-};
-const handleDeleteDataset = (item, index) => {
-  if (datasetList.value.length <= 1) {
-    return ElMessage.error('数据集个数不能少于1');
-  }
-};
 
-const handleCloseDataset = () => {
-  datasetVisible.value = false;
-};
-const handleConfirm = (data) => {
-  datasetVisible.value = false;
-  if (datasetIndex.value === -1) {
-    datasetList.value.push(data);
-  } else {
-    datasetList.value[datasetIndex.value] = data;
-  }
-};
 const selectedCoord = computed(() => {
   const { ri, ci } = activeCell.value;
   return `${ri},${ci}`;
@@ -206,26 +116,70 @@ const handleCellHeight = (e) => {
   xsInstance.sheet.data.setRowHeight(activeCell.value.ri, +e);
   xsInstance.reRender();
 };
-const handleGroupTypeChange = e => {
-  xsInstance.sheet.data.getSelectedCell().groupType = e
+const getExpressionStr = (dataset, field, groupType) => {
+  let str = ''
+  switch (groupType) {
+    case 'no':
+      str = `#{${dataset}.${field}}`
+      break
+    case 'group':
+      str = `#{${dataset}.group(${field})}`
+      break
+    case 'groupRight':
+      str = `#{${dataset}.groupRight(${field})}`
+      break
+  }
+  return str
 }
-const handleDragStart = (event, dataset, data) => {
-  const obj = {
-    datasetKey: dataset.key,
-    data,
-  };
-  event.dataTransfer.setData('data', JSON.stringify(obj));
+const handleGroupTypeChange = e => {
+  const cell = xsInstance.sheet.data.getSelectedCell()
+  const { dataset, field } = cell
+  cell.groupType = e
+  if (dataset && field) {
+    cell.text = getExpressionStr(dataset, field, e)
+  }
+  xsInstance.reRender()
+  syncCellData()
+}
+const handleDynamicWidthChange = e => {
+  const cell = xsInstance.sheet.data.getSelectedCell()
+  cell.dynamicWidth = e
+  xsInstance.reRender()
+  syncCellData()
+}
+const handleDragStart = (event, data) => {
+  event.dataTransfer.setData('data', JSON.stringify(data));
 };
 const handleDrop = (e) => {
   const data = e.dataTransfer.getData('data');
-  const json = JSON.parse(data);
-  const text = `#{${json.datasetKey}.${json.data.key}}`;
+  const { dataset, field } = JSON.parse(data);
+  const text = `#{${dataset}.${field}}`;
   const { ri, ci } = xsInstance.sheet.data.selector;
   xsInstance.sheet.data.setCellText(ri, ci, text, 'finished');
+  const cell = xsInstance.sheet.data.getCell(ri, ci)
+  cell.dataset = dataset
+  cell.field = field
+  cell.groupType = 'no'
+  cell.dynamicWidth = false
   xsInstance.reRender();
+  syncCellData()
 };
+const syncCellData = () => {
+  let cell = xsInstance.sheet.data.getSelectedCell() || {}
+  const { ri, ci } = xsInstance.sheet.data.selector;
+  const { width, height } = xsInstance.sheet.data.getSelectedRect();
+  activeCell.value = {
+    ...cell,
+    ri,
+    ci,
+    width,
+    height
+  };
+}
 const handlePreview = () => {
   const originData = xsInstance.sheet.data.getData();
+  Object.assign(originData, option)
+  reportData.value.data = JSON.stringify(originData)
   const { rows: originRows } = originData;
   const pattern = { dataset: '', cellConfigList: [] };
   const constructRows = {};
@@ -236,9 +190,10 @@ const handlePreview = () => {
     if (!originCells) {
       return;
     }
+    console.log(111,originCells)
     Object.keys(originCells).forEach((key) => {
       const cell = originCells[key];
-      let { text } = cell;
+      let { text,dataset,field,groupType } = cell;
       if (text && text.startsWith('#{')) {
         formulaRowIndex = +rowKey;
         text = text.replaceAll(' ', '');
@@ -255,6 +210,7 @@ const handlePreview = () => {
           pattern.dataKey = splitArr[1];
           pattern.cellConfigList.push({ key: splitArr[1], group: false, ...cell });
         }
+        console.log(9393,pattern)
       }
     });
   });
@@ -264,6 +220,7 @@ const handlePreview = () => {
     }
   }
   const findObj = datasetList.value.find((a) => a.key === pattern.dataset);
+  let previewData = ''
   if (findObj) {
     const data = JSON.parse(findObj.data);
     if (Array.isArray(data)) {
@@ -297,23 +254,96 @@ const handlePreview = () => {
       const cloneData = JSON.parse(JSON.stringify(originData));
       cloneData.rows = constructRows;
       cloneData.merges = cloneData.merges.concat(constructMerges);
-      const key = 'previewData';
-      localforage.setItem(key, JSON.stringify(cloneData));
-      window.open('/vision-report/preview');
+      previewData = JSON.stringify(cloneData)
     }
-  } else {
-    ElMessage.error('未找到数据源');
+    else {
+      const cloneData = JSON.parse(JSON.stringify(originData));
+      const { rows } = cloneData
+      Object.keys(rows).forEach(key => {
+        const item = rows[key]
+        if (item.cells) {
+          Object.keys(item.cells).forEach(cellKey => {
+            const cell = item.cells[cellKey]
+            const result = analysisExpression(cell)
+            if (result && result.dataset === findObj.key) {
+              cell.text = data[result.dataKey] || ''
+            }
+          })
+        }
+      })
+      previewData = JSON.stringify(cloneData)
+    }
   }
+  else {
+    previewData = JSON.stringify(originData)
+  }
+  const key = 'previewData';
+  localforage.setItem(key, previewData);
+  router.push(`/preview/${reportData.value.id}`)
 };
+const analysisExpression = (cell) => {
+  let text = cell.text
+  const pattern = { dataset: '', cellConfigList: [] }
+  if (text && text.startsWith('#{')) {
+    text = text.replaceAll(' ', '');
+    const a = text.slice(2, text.length - 1);
+    const arr = a.split('.');
+    if (arr[1].startsWith('group(')) {
+      let sliceStr = arr[1].slice(6, arr[1].length - 1);
+      pattern.group = true;
+      pattern.cellConfigList.push({ key: sliceStr, group: true, ...cell });
+    } else {
+      pattern.group = false;
+      const splitArr = a.split('.');
+      pattern.dataset = splitArr[0];
+      pattern.dataKey = splitArr[1];
+      pattern.cellConfigList.push({ key: splitArr[1], group: false, ...cell });
+    }
+  }
+  return pattern
+}
 const handleDragOver = (e) => {
   const { clientX, clientY } = e;
   const { ri, ci } = xsInstance.sheet.data.getCellRectByXY(clientX - 220, clientY - 40);
   xsInstance.sheet.selector.set(ri, ci, true);
   e.preventDefault();
 };
-const handleChange = (e) => { };
+const handleDatasetChange = () => {
+  handleAnalysis()
+};
+const handleAnalysis = () => {
+  const findObj = datasetList.value.find(a => a.id === reportData.value.datasetId)
+  if (findObj) {
+    const data = JSON.parse(findObj.data)
+    const obj = Array.isArray(data) ? data.length ? data[0] : {} : data
+    state.datasetFields = Object.keys(obj).map(key => {
+      return {
+        field: key,
+        dataset: findObj.key
+      }
+    })
+  }
+  else {
+    state.datasetFields = []
+  }
+}
+const handleBack = () => {
+  router.push('/list')
+}
 let xsInstance = null;
+const option = {
+  row: {
+    len: 100,
+    height: 25
+  },
+  col: {
+    len: 26,
+    width: 100,
+    minWidth: 10
+  },
+}
 onMounted(() => {
+  handleAnalysis()
   const options = {
     mode: 'edit', // edit | read
     showToolbar: true,
@@ -324,16 +354,7 @@ onMounted(() => {
       height: () => document.getElementById('xSpreadSheet').clientHeight,
       width: () => document.getElementById('xSpreadSheet').clientWidth,
     },
-    row: {
-      len: 100,
-      height: 25,
-    },
-    col: {
-      len: 26,
-      width: 100,
-      indexWidth: 60,
-      minWidth: 60,
-    },
+    ...option,
     style: {
       bgcolor: '#ffffff',
       align: 'left',
@@ -350,204 +371,17 @@ onMounted(() => {
       },
     },
   };
-  Spreadsheet.locale('zh-cn', zhCN);
-  xsInstance = new Spreadsheet('#xSpreadSheet', options)
-    .loadData({
-      "name": "sheet2",
-      "freeze": "A1",
-      "styles": [
-        {
-          "border": {
-            "bottom": [
-              "thin",
-              "#000"
-            ],
-            "top": [
-              "thin",
-              "#000"
-            ],
-            "left": [
-              "thin",
-              "#000"
-            ],
-            "right": [
-              "thin",
-              "#000"
-            ]
-          }
-        },
-        {
-          "border": {
-            "bottom": [
-              "thin",
-              "#000"
-            ],
-            "top": [
-              "thin",
-              "#000"
-            ],
-            "left": [
-              "thin",
-              "#000"
-            ],
-            "right": [
-              "thin",
-              "#000"
-            ]
-          },
-          "bgcolor": "#d8d8d8"
-        },
-        {
-          "format": "percent"
-        },
-        {
-          "format": "datetime"
-        },
-        {
-          "format": "date"
-        },
-        {
-          "format": "text"
-        },
-        {
-          "format": "normal"
-        },
-        {
-          "align": "center"
-        },
-        {
-          "align": "center",
-          "font": {
-            "size": 12
-          }
-        },
-        {
-          "align": "center",
-          "font": {
-            "size": 14
-          }
-        }
-      ],
-      "merges": [
-        "A1:C1"
-      ],
-      "rows": {
-        "0": {
-          "cells": {
-            "0": {
-              "merge": [
-                0,
-                2
-              ],
-              "text": "统计报表",
-              "style": 9
-            },
-            "1": {
-              "style": 9
-            },
-            "2": {
-              "style": 9
-            }
-          },
-          "height": 41
-        },
-        "1": {
-          "cells": {
-            "0": {
-              "text": "日期",
-              "style": 1
-            },
-            "1": {
-              "text": "姓名",
-              "style": 1
-            },
-            "2": {
-              "text": "地址",
-              "style": 1
-            }
-          }
-        },
-        "2": {
-          "cells": {
-            "0": {
-              "style": 0,
-              "text": "#{dataset1.date}"
-            },
-            "1": {
-              "style": 0,
-              "text": "#{dataset1.name}"
-            },
-            "2": {
-              "style": 0,
-              "text": "#{dataset1.address}"
-            }
-          }
-        },
-        "3": {
-          "cells": {
-            "0": {
-              "style": 6
-            }
-          }
-        },
-        "4": {
-          "cells": {
-            "0": {}
-          }
-        },
-        "5": {
-          "cells": {
-            "0": {},
-            "3": {}
-          }
-        },
-        "6": {
-          "cells": {
-            "0": {}
-          }
-        },
-        "7": {
-          "cells": {
-            "0": {}
-          }
-        },
-        "len": 101
-      },
-      "cols": {
-        "0": {
-          "width": 120
-        },
-        "1": {
-          "width": 149
-        },
-        "2": {
-          "width": 152
-        },
-        "len": 26
-      },
-      "validations": [],
-      "autofilter": {}
-    }) // load data
-    .change((data) => {
-      // console.log(JSON.stringify(data))
-      // save data to db
-    });
+  x_spreadsheet.locale('zh-cn', x_spreadsheet.$messages['zh-cn']);
+  const editorData = JSON.parse(reportData.value.data)
+  xsInstance = new x_spreadsheet('#xSpreadSheet', options).loadData(editorData) // load data
+  xsInstance.reRender()
   xsInstance.on('cell-selected', (cell, ri, ci) => {
-    let obj = cell || {};
-    const { width, height } = xsInstance.sheet.data.getSelectedRect();
-    activeCell.value = {
-      text: obj.text || '',
-      ri,
-      ci,
-      width,
-      height,
-      groupType: obj.groupType || ''
-    };
-    console.log(activeCell)
+    syncCellData()
   });
   window.xsInstance = xsInstance;
 });
 </script>
+
 <style lang="scss">
 @import './index.scss';
 </style>
