@@ -85,10 +85,11 @@ const handleAdd = () => {
         name: '未命名',
         createdOn: nowTime,
         updatedOn: nowTime,
-        data: ''
+        data: '{"name":"sheet2","freeze":"A1","styles":[{"bgcolor":"#e7e5e6"},{"bgcolor":"#e7e5e6","border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}},{"border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}}],"merges":[],"rows":{"0":{"cells":{"0":{},"1":{},"2":{}}},"1":{"cells":{"0":{"dataset":"address","field":"name","groupType":"group","dynamicWidth":true},"1":{"dataset":"address","field":"email","groupType":"no","dynamicWidth":true},"2":{"dataset":"address","field":"address","groupType":"group","dynamicWidth":true}}},"len":100},"cols":{"len":26},"validations":[],"autofilter":{}}',
+        datasetId: '',
     }
-    originData.push(data)
-    window.open(`/visionReport/${data.id}`)
+    originData.unshift(data)
+    router.push(`/visionReport/${data.id}`)
 }
 onMounted(() => {
     handleQuery()

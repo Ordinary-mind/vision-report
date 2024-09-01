@@ -14,7 +14,7 @@
                                     <div class="list-item" @click="handleLogout">退出登录</div>
                                 </div>
                             </template>
-                            <el-avatar>梁</el-avatar>
+                            <el-avatar>用户</el-avatar>
                         </el-tooltip>
                     </div>
                 </div>

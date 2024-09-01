@@ -36,7 +36,7 @@ const config = {
             datasetId: 'pendjpkp5cbm6ab6',
             createdOn: dayjs().subtract(4, 'day').format('YYYY-MM-DD 10:32:54'),
             updatedOn: dayjs().subtract(1, 'day').format('YYYY-MM-DD 11:38:35'),
-            data: '{"name":"sheet2","freeze":"A1","styles":[],"merges":[],"rows":{},"cols":{},"validations":[],"autofilter":{}}',
+            data: '{"name":"sheet2","freeze":"A1","styles":[{"bgcolor":"#e7e5e6"},{"bgcolor":"#e7e5e6","border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}},{"border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}}],"merges":[],"rows":{"0":{"cells":{"0":{"text":"地区","style":1},"1":{"text":"省份","style":1},"2":{"text":"单价","style":1},"3":{"text":"数量","style":1},"4":{"text":"小计","style":1}}},"1":{"cells":{"0":{"style":2,"text":"#{test.group(area)}","dataset":"test","field":"area","groupType":"group","dynamicWidth":false},"1":{"style":2,"text":"#{test.province}","dataset":"test","field":"province","groupType":"no","dynamicWidth":false},"2":{"style":2,"text":"#{test.price}","dataset":"test","field":"price","groupType":"no","dynamicWidth":false},"3":{"style":2,"text":"#{test.amount}","dataset":"test","field":"amount","groupType":"no","dynamicWidth":false},"4":{"style":2}}},"len":100},"cols":{"len":26},"validations":[],"autofilter":{}}'
         }
     ],
     datasetList: [
@@ -45,7 +45,7 @@ const config = {
             name: '地址数据集',
             type: 'json',
             key: 'address',
-            data: '[{"name":"张三","address":"广州市白云区","email":"zhangsan@163.com"},{"name":"张三","address":"广州市白云区","email":"zhangsan1@163.com"},{"name":"李四","address":"广州市荔湾区","email":"lisi@163.com"},{"name":"王五","address":"广州市海珠区","email":"wangwu@163.com"},{"name":"赵六","address":"广州市黄埔区","email":"zhaoliu@163.com"}]',
+            data: '{"name":"sheet2","freeze":"A1","styles":[{"bgcolor":"#e7e5e6"},{"bgcolor":"#e7e5e6","border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}},{"border":{"bottom":["thin","#000"],"top":["thin","#000"],"left":["thin","#000"],"right":["thin","#000"]}}],"merges":[],"rows":{"0":{"cells":{"0":{"text":"地区","style":1},"1":{"text":"省份","style":1},"2":{"text":"单价","style":1},"3":{"text":"数量","style":1},"4":{"text":"小计","style":1}}},"1":{"cells":{"0":{"style":2,"text":"#{test.group(area)}","dataset":"test","field":"area","groupType":"group","dynamicWidth":false},"1":{"style":2,"text":"#{test.province}","dataset":"test","field":"province","groupType":"no","dynamicWidth":false},"2":{"style":2,"text":"#{test.price}","dataset":"test","field":"price","groupType":"no","dynamicWidth":false},"3":{"style":2,"text":"#{test.amount}","dataset":"test","field":"amount","groupType":"no","dynamicWidth":false},"4":{"style":2,"text":"#{test.computed(price*amount)}","dataset":"test","field":"area","groupType":"no","dynamicWidth":false}}},"len":100},"cols":{"len":26},"validations":[],"autofilter":{}}',
             createdOn: dayjs().subtract(3, 'day').format('YYYY-MM-DD 09:12:22'),
             updatedOn: dayjs().subtract(1, 'day').format('YYYY-MM-DD 13:22:53'),
         },
@@ -60,10 +60,10 @@ const config = {
         },
         {
             id: 'pendjpkp5cbm6ab6',
-            name: '测试数据',
+            name: '省份销售数据',
             type: 'json',
             key: 'test',
-            data: '[]',
+            data: '[{"area":"华东","province":"上海","price":101,"amount":6},{"area":"华东","province":"安徽","price":98,"amount":8},{"area":"华东","province":"山东","price":105,"amount":5},{"area":"华东","province":"江西","price":111,"amount":11},{"area":"华东","province":"浙江","price":99,"amount":9},{"area":"华东","province":"福建","price":102,"amount":13},{"area":"华北","province":"北京","price":111,"amount":7},{"area":"华北","province":"天津","price":99,"amount":9},{"area":"华北","province":"山西","price":106,"amount":8}]',
             createdOn: dayjs().subtract(4, 'day').format('YYYY-MM-DD 10:32:54'),
             updatedOn: dayjs().subtract(1, 'day').format('YYYY-MM-DD 11:38:35'),
         }

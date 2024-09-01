@@ -21,7 +21,7 @@ export default defineConfig({
   build: {
     outDir: 'docs'
   },
-  base: '/vision-report/',
+  // base: '/vision-report/',
   // productionSourceMap: false,
   plugins: [
     vue(),

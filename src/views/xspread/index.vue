@@ -61,6 +61,9 @@
             <el-form-item label="动态宽度">
               <el-checkbox v-model="activeCell.dynamicWidth" @change="handleDynamicWidthChange" />
             </el-form-item>
+            <el-form-item label="计算属性">
+              <el-input v-model="activeCell.computed" @input="handleComputedInput" placeholder="请输入值" />
+            </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>
@@ -96,14 +99,23 @@ const activeCell = ref({
   width: null,
   height: null,
   groupType: 'no',
-  dynamicWidth: false
+  dynamicWidth: false,
+  computed: '',
 });
 
 const selectedCoord = computed(() => {
   const { ri, ci } = activeCell.value;
   return `${ri},${ci}`;
 });
-
+const handleComputedInput = (e) => {
+  const { dataset, ri, ci } = activeCell.value
+  if (dataset) {
+    const text = `#{test.computed(${e})}`
+    activeCell.value.text = text
+    xsInstance.sheet.data.setCellText(ri, ci, text, 'finished');
+    xsInstance.reRender();
+  }
+}
 const handleActiveCellText = (e) => {
   xsInstance.sheet.data.setSelectedCellText(e);
   xsInstance.reRender();
@@ -190,10 +202,10 @@ const handlePreview = () => {
     if (!originCells) {
       return;
     }
-    console.log(111,originCells)
+    console.log(111, originCells)
     Object.keys(originCells).forEach((key) => {
       const cell = originCells[key];
-      let { text,dataset,field,groupType } = cell;
+      let { text, dataset, field, groupType } = cell;
       if (text && text.startsWith('#{')) {
         formulaRowIndex = +rowKey;
         text = text.replaceAll(' ', '');
@@ -210,10 +222,10 @@ const handlePreview = () => {
           pattern.dataKey = splitArr[1];
           pattern.cellConfigList.push({ key: splitArr[1], group: false, ...cell });
         }
-        console.log(9393,pattern)
       }
     });
   });
+  console.log(9393, pattern)
   if (formulaRowIndex > -1) {
     for (let i = 0; i < formulaRowIndex; i++) {
       constructRows[i] = originRows[i];

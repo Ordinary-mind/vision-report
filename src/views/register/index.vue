@@ -10,10 +10,10 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" size="large" class="full-width" style="margin-top: 32px;"
-                    @click="handleLogin">登录</el-button>
+                    @click="handleRegister">注册</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" link @click="handleGotoRegister">注册</el-button>
+                <el-button type="primary" link @click="handleGotoLogin">登录</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -31,21 +31,19 @@ const rules = {
     userName: { required: true, message: '用户名不能为空' },
     password: { required: true, message: '密码不能为空' },
 }
-const handleLogin = () => {
+const handleRegister = () => {
     formRef.value.validate(async valid => {
         if (valid) {
-            const [err, res] = await api.login(form.value)
+            const [err, res] = await api.register(form.value)
             if (!err) {
-                localStorage.setItem('token', res.token)
-                ElMessage.success('登录成功')
-                router.push('/')
+                ElMessage.success('注册成功')
+                router.push('/login')
             }
         }
     })
 }
-const handleGotoRegister = ()=> {
-    console.log(1293)
-    router.push('/register')
+const handleGotoLogin = ()=> {
+    router.push('/login')
 }
 </script>
 <style lang="scss">
