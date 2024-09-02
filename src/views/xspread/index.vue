@@ -73,7 +73,6 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import localforage from 'localforage';
 import { useRoute, useRouter } from 'vue-router';
 import { getConfig, setConfig } from '@/utils';
 const config = ref({})
@@ -188,17 +187,18 @@ const syncCellData = () => {
   };
 }
 const handlePreview = () => {
+  storeConfig()
+  router.push(`/preview/${reportData.value.id}`)
+};
+
+const storeConfig = () => {
   const originData = xsInstance.sheet.data.getData();
   Object.assign(originData, option)
   reportData.value.data = JSON.stringify(originData)
-  
-  const key = 'previewData';
-  localforage.setItem(key, previewData);
   const findIndex = config.value.reportList.findIndex(a => a.id === reportData.value.id)
   config.value.reportList[findIndex] = reportData.value
   setConfig(config.value)
-  router.push(`/preview/${reportData.value.id}`)
-};
+}
 
 const handleDragOver = (e) => {
   const { clientX, clientY } = e;
@@ -281,6 +281,9 @@ onMounted(async () => {
     syncCellData()
   });
   window.xsInstance = xsInstance;
+  window.addEventListener('beforeunload', () => {
+    storeConfig()
+  })
 });
 </script>
 
