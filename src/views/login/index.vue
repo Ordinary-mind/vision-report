@@ -21,9 +21,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import api from '@/api'
-import config from '@/config'
+import { getConfig } from '@/utils';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus/es';
+
+const config = ref({})
 const router = useRouter()
 const formRef = ref()
 const form = ref({ userName: '', password: '' })
@@ -43,10 +45,14 @@ const handleLogin = () => {
         }
     })
 }
-const handleGotoRegister = ()=> {
+const handleGotoRegister = () => {
     console.log(1293)
     router.push('/register')
 }
+onMounted(async () => {
+    const data = await getConfig()
+    config.value = data
+})
 </script>
 <style lang="scss">
 .full-width {

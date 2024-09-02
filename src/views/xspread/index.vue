@@ -73,17 +73,17 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import { ElMessage } from 'element-plus';
 import CellRange from 'x-data-spreadsheet/src/core/cell_range';
 import localforage from 'localforage';
-import config from '@/config'
 import { useRoute, useRouter } from 'vue-router';
+import { getConfig } from '@/utils';
+const config = ref({})
 const activeTab = ref('basic');
 const route = useRoute()
 const router = useRouter()
-const findObj = config.reportList.find(a => a.id === route.params.id)
-const reportData = ref(findObj)
-const datasetList = ref(config.datasetList);
+const reportData = ref({})
+
+const datasetList = ref([]);
 const state = reactive({
   datasetFields: []
 })
@@ -354,7 +354,11 @@ const option = {
     minWidth: 10
   },
 }
-onMounted(() => {
+onMounted(async () => {
+  const data = await getConfig()
+  config.value = data
+  reportData.value = data.reportList.find(a => a.id === route.params.id)
+  datasetList.value = data.datasetList
   handleAnalysis()
   const options = {
     mode: 'edit', // edit | read

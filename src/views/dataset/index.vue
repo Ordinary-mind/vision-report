@@ -43,16 +43,17 @@
 </template>
 
 <script setup lang="ts">
-import config from '@/config'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import businessDialog from './com/businessDialog/index.vue'
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
-import { getId } from '@/utils';
+import { getId, setConfig, getConfig } from '@/utils';
 defineOptions({
     name: 'dataset'
 })
-const originData = config.datasetList
+let config = {} as any
+let originData = []
+// const originData = config.datasetList
 const tableData = ref([])
 const sourceTypeList = [
     { value: 'json', label: 'JSON数据集' },
@@ -126,16 +127,26 @@ const handleBusinessDialogCommand = (e) => {
         data.id = getId()
         data.createdOn = dayjs().format('YYYY-MM-DD HH:mm:ss')
         originData.unshift(data)
+        ElMessage.success('新增成功')
     }
     else {
         const findObj = originData.find(a => a.id === data.id)
         Object.assign(findObj, data)
+        ElMessage.success('修改成功')
     }
     handleQuery()
     businessDialogRef.value.handleClose()
 }
-onMounted(() => {
+onMounted(async () => {
+    config = await getConfig()
+    originData = config.datasetList
     handleQuery()
+    window.addEventListener('beforeunload', () => {
+        setConfig(config)
+    })
+})
+onBeforeUnmount(() => {
+    setConfig(config)
 })
 </script>
 

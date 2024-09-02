@@ -22,7 +22,7 @@
             <el-container>
                 <el-aside width="200px">
                     <el-menu :default-active="defaultActive" @select="handleMenuSelect">
-                        <el-menu-item v-for="(item) in state.menuList" :index="item.url">
+                        <el-menu-item v-for="(item) in menuList" :index="item.url">
                             <el-icon>
                                 <component :is="item.icon"></component>
                             </el-icon>
@@ -39,17 +39,15 @@
 </template>
 
 <script setup lang="ts">
-import config from '@/config'
-import { reactive } from 'vue'
+import { getConfig } from '@/utils';
 import { useRouter, useRoute } from 'vue-router';
 defineOptions({
     name: 'mainLayout'
 })
+const config = ref({})
+const menuList = ref([])
 const router = useRouter()
 const route = useRoute()
-const state = reactive({
-    menuList: config.menuList
-})
 const defaultActive = computed(() => {
     return route.path
 })
@@ -60,6 +58,12 @@ const handleLogout = () => {
 const handleMenuSelect = (index) => {
     router.push(index)
 }
+
+onMounted(async () => {
+    const data = await getConfig()
+    config.value = data
+    menuList.value = data.menuList
+})
 </script>
 
 <style lang="scss">

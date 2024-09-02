@@ -30,18 +30,19 @@
 </template>
 
 <script setup lang="ts">
-import config from '@/config'
-import { getId } from '@/utils';
+import { getId, getConfig, setConfig } from '@/utils';
 import dayjs from 'dayjs';
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 defineOptions({
     name: 'reportList'
 })
-const originData = config.reportList
+let config = {} as any
+let originData = []
+// const originData = config.reportList
 const router = useRouter()
 // const tableData = ref(config.reportList)
-const tableData = ref(config.reportList)
+const tableData = ref([])
 const state = reactive({
     query: {
         keyword: ''
@@ -91,8 +92,13 @@ const handleAdd = () => {
     originData.unshift(data)
     router.push(`/visionReport/${data.id}`)
 }
-onMounted(() => {
+onMounted(async () => {
+    config = await getConfig()
+    originData = config.reportList
     handleQuery()
+    window.addEventListener('beforeunload', () => {
+        setConfig(config)
+    })
 })
 </script>
 
