@@ -39,9 +39,7 @@ defineOptions({
 })
 let config = {} as any
 let originData = []
-// const originData = config.reportList
 const router = useRouter()
-// const tableData = ref(config.reportList)
 const tableData = ref([])
 const state = reactive({
     query: {
@@ -90,6 +88,7 @@ const handleAdd = () => {
         datasetId: '',
     }
     originData.unshift(data)
+    setConfig(config)
     router.push(`/visionReport/${data.id}`)
 }
 onMounted(async () => {

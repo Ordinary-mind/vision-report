@@ -76,7 +76,7 @@ import { onMounted, ref, computed } from 'vue';
 import CellRange from 'x-data-spreadsheet/src/core/cell_range';
 import localforage from 'localforage';
 import { useRoute, useRouter } from 'vue-router';
-import { getConfig } from '@/utils';
+import { getConfig, setConfig } from '@/utils';
 const config = ref({})
 const activeTab = ref('basic');
 const route = useRoute()
@@ -231,66 +231,71 @@ const handlePreview = () => {
       constructRows[i] = originRows[i];
     }
   }
-  const findObj = datasetList.value.find((a) => a.key === pattern.dataset);
   let previewData = ''
-  if (findObj) {
-    const data = JSON.parse(findObj.data);
-    if (Array.isArray(data)) {
-      let mergeList = [];
-      data.forEach((item, rowIndex) => {
-        const constructCells = {};
-        const finalRowIndex = formulaRowIndex + rowIndex;
-        pattern.cellConfigList.forEach((cell, cellIndex) => {
-          const text = item[cell.key];
-          constructCells[cellIndex] = { ...cell, text };
-          if (cell.group) {
-            if (finalRowIndex === formulaRowIndex) {
-              mergeList.push({ rowIndex: finalRowIndex, cellIndex, rowCount: 1 });
-            } else {
-              if (data[rowIndex - 1][cell.key] === text) {
-                mergeList.at(-1).rowCount++;
-              } else {
+  if (pattern.dataset) {
+    const findObj = datasetList.value.find((a) => a.key === pattern.dataset);
+    if (findObj) {
+      const data = JSON.parse(findObj.data);
+      if (Array.isArray(data)) {
+        let mergeList = [];
+        data.forEach((item, rowIndex) => {
+          const constructCells = {};
+          const finalRowIndex = formulaRowIndex + rowIndex;
+          pattern.cellConfigList.forEach((cell, cellIndex) => {
+            const text = item[cell.key];
+            constructCells[cellIndex] = { ...cell, text };
+            if (cell.group) {
+              if (finalRowIndex === formulaRowIndex) {
                 mergeList.push({ rowIndex: finalRowIndex, cellIndex, rowCount: 1 });
+              } else {
+                if (data[rowIndex - 1][cell.key] === text) {
+                  mergeList.at(-1).rowCount++;
+                } else {
+                  mergeList.push({ rowIndex: finalRowIndex, cellIndex, rowCount: 1 });
+                }
               }
             }
-          }
+          });
+          Reflect.set(constructRows, finalRowIndex, { cells: constructCells });
         });
-        Reflect.set(constructRows, finalRowIndex, { cells: constructCells });
-      });
-      mergeList = mergeList.filter((a) => a.rowCount > 1);
-      const constructMerges = mergeList.map((item) => {
-        const { rowIndex, cellIndex, rowCount } = item;
-        constructRows[rowIndex].cells[cellIndex].merge = [rowCount - 1, 0];
-        return new CellRange(rowIndex, cellIndex, rowIndex + rowCount, cellIndex).toString();
-      });
-      const cloneData = JSON.parse(JSON.stringify(originData));
-      cloneData.rows = constructRows;
-      cloneData.merges = cloneData.merges.concat(constructMerges);
-      previewData = JSON.stringify(cloneData)
+        mergeList = mergeList.filter((a) => a.rowCount > 1);
+        const constructMerges = mergeList.map((item) => {
+          const { rowIndex, cellIndex, rowCount } = item;
+          constructRows[rowIndex].cells[cellIndex].merge = [rowCount - 1, 0];
+          return new CellRange(rowIndex, cellIndex, rowIndex + rowCount, cellIndex).toString();
+        });
+        const cloneData = JSON.parse(JSON.stringify(originData));
+        cloneData.rows = constructRows;
+        cloneData.merges = cloneData.merges.concat(constructMerges);
+        previewData = JSON.stringify(cloneData)
+      }
+      else {
+        const cloneData = JSON.parse(JSON.stringify(originData));
+        const { rows } = cloneData
+        Object.keys(rows).forEach(key => {
+          const item = rows[key]
+          if (item.cells) {
+            Object.keys(item.cells).forEach(cellKey => {
+              const cell = item.cells[cellKey]
+              const result = analysisExpression(cell)
+              if (result && result.dataset === findObj.key) {
+                cell.text = data[result.dataKey] || ''
+              }
+            })
+          }
+        })
+        previewData = JSON.stringify(cloneData)
+      }
     }
     else {
-      const cloneData = JSON.parse(JSON.stringify(originData));
-      const { rows } = cloneData
-      Object.keys(rows).forEach(key => {
-        const item = rows[key]
-        if (item.cells) {
-          Object.keys(item.cells).forEach(cellKey => {
-            const cell = item.cells[cellKey]
-            const result = analysisExpression(cell)
-            if (result && result.dataset === findObj.key) {
-              cell.text = data[result.dataKey] || ''
-            }
-          })
-        }
-      })
-      previewData = JSON.stringify(cloneData)
+      previewData = JSON.stringify(originData)
     }
-  }
-  else {
-    previewData = JSON.stringify(originData)
   }
   const key = 'previewData';
   localforage.setItem(key, previewData);
+  const findIndex = config.value.reportList.findIndex(a => a.id === reportData.value.id)
+  config.value.reportList[findIndex] = reportData.value
+  setConfig(config.value)
   router.push(`/preview/${reportData.value.id}`)
 };
 const analysisExpression = (cell) => {
