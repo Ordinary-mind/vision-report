@@ -1,4 +1,4 @@
-import{G as ne,H as Mr}from"./index-763031f0.js";function te(oe){throw new Error('Could not dynamically require "'+oe+'". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.')}var Me={exports:{}};/*!
+import{G as ne,H as Mr}from"./index-c8e104d5.js";function te(oe){throw new Error('Could not dynamically require "'+oe+'". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.')}var Me={exports:{}};/*!
     localForage -- Offline Storage, Improved
     Version 1.10.0
     https://localforage.github.io/localForage
