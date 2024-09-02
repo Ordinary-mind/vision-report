@@ -53,7 +53,7 @@ const handleEdit = (e) => {
 }
 const handlePreview = (e) => {
     const url = `/preview/${e.id}`
-    window.open(url)
+    router.push(url)
 }
 const handleQuery = () => {
     tableData.value = originData.filter(a => {
